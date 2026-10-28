@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EduPredict | Student Performance Dashboard</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="app-container">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">E</div>
+
+            <div>
+                <h2>EduPredict</h2>
+                <p>Academic Analytics</p>
+            </div>
+        </div>
+
+        <div class="sidebar-section-title">MAIN MENU</div>
+
+        <nav class="sidebar-nav">
+
+            <a href="#overview" class="nav-link active" data-section="overview">
+                <span>▦</span>
+                Overview
+            </a>
+
+            <a href="#analytics" class="nav-link" data-section="analytics">
+                <span>▥</span>
+                Analytics
+            </a>
+
+            <a href="#prediction" class="nav-link" data-section="prediction">
+                <span>✦</span>
+                Prediction
+            </a>
+
+            <a href="#evaluation" class="nav-link" data-section="evaluation">
+                <span>▤</span>
+                Model Evaluation
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="model-info">
+                <div class="status-dot"></div>
+
+                <div>
+                    <strong>SVM Classifier</strong>
+                    <small>Model is ready</small>
+                </div>
+            </div>
+
+            <p class="sidebar-footer">
+                EduPredict Dashboard<br>
+                Student Performance Analysis
+            </p>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+
+            <button id="sidebarToggle" class="menu-toggle" type="button"
+                    aria-label="Toggle sidebar">
+                ☰
+            </button>
+
+            <div class="page-heading">
+                <h1 id="pageTitle">Overview</h1>
+                <p>Monitor and predict student academic performance.</p>
+            </div>
+
+            <div class="topbar-right">
+                <span class="model-badge">● SVM Model</span>
+            </div>
+
+        </header>
+
+
+        <!-- OVERVIEW -->
+        <section id="overview" class="content-section">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Dashboard Overview</h2>
+                    <p>Summary of student academic performance.</p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Total Students</span>
+                        <span class="stat-icon purple">♙</span>
+                    </div>
+
+                    <h3 id="kpiStudents">--</h3>
+                    <p class="stat-description">Students in the dataset</p>
+                </div>
+
+
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Average Final Grade</span>
+                        <span class="stat-icon blue">▤</span>
+                    </div>
+
+                    <h3 id="kpiAverage">--</h3>
+                    <p class="stat-description">Average G3 grade out of 20</p>
+                </div>
+
+
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Model Accuracy</span>
+                        <span class="stat-icon green">✓</span>
+                    </div>
+
+                    <h3 id="kpiAccuracy">--</h3>
+                    <p class="stat-description">Performance on test data</p>
+                </div>
+
+
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Students Passed</span>
+                        <span class="stat-icon orange">↗</span>
+                    </div>
+
+                    <h3 id="kpiPass">--</h3>
+                    <p class="stat-description">Final grade of 10 or above</p>
+                </div>
+
+            </div>
+
+
+
+        </section>
+
+
+        <!-- ANALYTICS -->
+        <section id="analytics" class="content-section">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Student Analytics</h2>
+                    <p>Explore the grade distribution in the dataset.</p>
+                </div>
+            </div>
+
+            <div class="analytics-grid">
+
+                <div class="card chart-card">
+                    <div class="card-heading">
+                        <div>
+                            <h3>Performance Distribution</h3>
+                            <p>Pass versus Fail</p>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="analyticsDoughnut"></canvas>
+                    </div>
+                </div>
+
+
+                <div class="card chart-card">
+                    <div class="card-heading">
+                        <div>
+                            <h3>Final Grade Distribution</h3>
+                            <p>Grade frequency from 0 to 20</p>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="analyticsBar"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- PREDICTION -->
+        <section id="prediction" class="content-section">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Student Performance Prediction</h2>
+                    <p>Enter student details to predict the result.</p>
+                </div>
+            </div>
+
+
+            <div class="prediction-layout">
+
+                <div class="card prediction-form-card">
+
+                    <div class="card-heading">
+                        <div>
+                            <h3>Student Information</h3>
+                            <p>Enter all three required values.</p>
+                        </div>
+                    </div>
+
+
+                    <form id="predictionForm">
+
+                        <div class="form-grid">
+
+                            <div class="form-group">
+                                <label for="studytime">Weekly Study Time</label>
+
+                                <select id="studytime" name="studytime" required>
+                                    <option value="">Select study time</option>
+                                    <option value="1">1 - Less than 2 hours</option>
+                                    <option value="2">2 - 2 to 5 hours</option>
+                                    <option value="3">3 - 5 to 10 hours</option>
+                                    <option value="4">4 - More than 10 hours</option>
+                                </select>
+
+                                <small>Study time category from 1 to 4.</small>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="G1">First Period Grade (G1)</label>
+
+                                <input
+                                    type="number"
+                                    id="G1"
+                                    name="G1"
+                                    min="0"
+                                    max="20"
+                                    step="1"
+                                    placeholder="Enter grade (0-20)"
+                                    required
+                                >
+
+                                <small>Grade from 0 to 20.</small>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="G2">Second Period Grade (G2)</label>
+
+                                <input
+                                    type="number"
+                                    id="G2"
+                                    name="G2"
+                                    min="0"
+                                    max="20"
+                                    step="1"
+                                    placeholder="Enter grade (0-20)"
+                                    required
+                                >
+
+                                <small>Grade from 0 to 20.</small>
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-note">
+                            <strong>Prediction rule:</strong>
+                            The trained SVM model predicts Fail or Pass
+                            using studytime, G1, and G2.
+                        </div>
+
+
+                        <div class="form-error hidden" id="formError"></div>
+
+
+                        <div class="form-actions">
+
+                            <button type="reset" class="btn btn-secondary">
+                                Reset
+                            </button>
+
+                            <button type="submit" class="btn btn-primary" id="predictButton">
+                                Predict Performance
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+
+                <div class="card prediction-result-card">
+
+                    <div class="card-heading">
+                        <div>
+                            <h3>Prediction Result</h3>
+                            <p>The model's predicted outcome</p>
+                        </div>
+                    </div>
+
+                    <div id="predictionPlaceholder" class="prediction-placeholder">
+                        <div class="placeholder-icon">✦</div>
+
+                        <h3>Ready to Predict</h3>
+
+                        <p>
+                            Complete the form and click
+                            <strong>Predict Performance</strong>
+                            to see the result.
+                        </p>
+                    </div>
+
+
+                    <div id="predictionResult" class="hidden">
+
+                        <p class="result-label">Predicted Outcome</p>
+
+                        <div id="predictionBadge" class="prediction-badge">
+                            --
+                        </div>
+
+                        <p id="predictionMessage" class="result-message"></p>
+
+                        <div class="probability-heading">
+                            <h4>Estimated Class Probabilities</h4>
+                        </div>
+
+                        <div id="probabilityBars"></div>
+
+                        <p class="small-note">
+                            Probabilities are model estimates, not guarantees
+                            of a student's actual result.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- MODEL EVALUATION -->
+        <section id="evaluation" class="content-section">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Model Evaluation</h2>
+                    <p>Evaluate the SVM classifier on held-out test data.</p>
+                </div>
+            </div>
+
+
+            <div class="stats-grid evaluation-stats">
+
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Accuracy</span>
+                        <span class="stat-icon purple">✓</span>
+                    </div>
+
+                    <h3 id="evalAccuracy">--</h3>
+                    <p class="stat-description">Correct predictions</p>
+                </div>
+
+
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Precision</span>
+                        <span class="stat-icon blue">P</span>
+                    </div>
+
+                    <h3 id="evalPrecision">--</h3>
+                    <p class="stat-description">Average across both classes</p>
+                </div>
+
+
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Recall</span>
+                        <span class="stat-icon green">R</span>
+                    </div>
+
+                    <h3 id="evalRecall">--</h3>
+                    <p class="stat-description">Average across both classes</p>
+                </div>
+
+
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">F1 Score</span>
+                        <span class="stat-icon orange">F1</span>
+                    </div>
+
+                    <h3 id="evalF1">--</h3>
+                    <p class="stat-description">Balance of precision and recall</p>
+                </div>
+
+            </div>
+
+
+            <div class="evaluation-grid">
+
+                <div class="card">
+                    <div class="card-heading">
+                        <div>
+                            <h3>Confusion Matrix</h3>
+                            <p>Actual versus predicted labels</p>
+                        </div>
+                    </div>
+
+                    <div id="confusionMatrix" class="matrix-wrapper">
+                        Loading confusion matrix...
+                    </div>
+
+                    <p class="small-note">
+                        Rows represent actual labels; columns represent
+                        predicted labels.
+                    </p>
+                </div>
+
+
+                <div class="card">
+                    <div class="card-heading">
+                        <div>
+                            <h3>Classification Report</h3>
+                            <p>Metrics for Fail and Pass</p>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="report-table">
+                            <thead>
+                                <tr>
+                                    <th>Class</th>
+                                    <th>Precision</th>
+                                    <th>Recall</th>
+                                    <th>F1-Score</th>
+                                    <th>Support</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="classificationReport">
+                                <tr>
+                                    <td colspan="5">Loading report...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        
+
+
+        <footer class="main-footer">
+            EduPredict · Student Academic Performance Prediction
+        </footer>
+
+    </main>
+
+</div>
+
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
